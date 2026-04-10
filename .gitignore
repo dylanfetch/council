@@ -1,0 +1,7 @@
+node_modules/
+.council/
+.superpowers/
+__pycache__/
+*.egg-info/
+.env
+data/

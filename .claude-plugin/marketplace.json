@@ -1,0 +1,13 @@
+{
+  "name": "council",
+  "owner": {
+    "name": "Dylan"
+  },
+  "plugins": [
+    {
+      "name": "council",
+      "source": "./council",
+      "description": "Assemble councils of AI advisor personas and consult them using structured deliberation styles"
+    }
+  ]
+}
