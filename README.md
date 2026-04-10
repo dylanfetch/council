@@ -1,17 +1,39 @@
 # Council
 
+________/\\\\\\\\\________________________________________________________________/\\\\\\____        
+ _____/\\\////////________________________________________________________________\////\\\____       
+  ___/\\\/____________________________________________________________________/\\\____\/\\\____      
+   __/\\\_________________/\\\\\_____/\\\____/\\\__/\\/\\\\\\_______/\\\\\\\\_\///_____\/\\\____     
+    _\/\\\_______________/\\\///\\\__\/\\\___\/\\\_\/\\\////\\\____/\\\//////___/\\\____\/\\\____    
+     _\//\\\_____________/\\\__\//\\\_\/\\\___\/\\\_\/\\\__\//\\\__/\\\_________\/\\\____\/\\\____   
+      __\///\\\__________\//\\\__/\\\__\/\\\___\/\\\_\/\\\___\/\\\_\//\\\________\/\\\____\/\\\____  
+       ____\////\\\\\\\\\__\///\\\\\/___\//\\\\\\\\\__\/\\\___\/\\\__\///\\\\\\\\_\/\\\__/\\\\\\\\\_ 
+        _______\/////////_____\/////______\/////////___\///____\///_____\////////__\///__\/////////__
+        
 Assemble councils of AI advisor personas. Consult them on your decisions.
 
 Council is a Claude Code plugin. No server, no dependencies, no API key beyond your Claude subscription. It works by teaching your agent how to coordinate subagent personas through structured deliberation styles.
 
 Think of it as a paradigm, not an application. Personas are markdown files. Deliberation styles are markdown files. Councils are markdown files. Your agent reads them and follows the instructions.
 
+## Flexible and Extensible
+
+This plugin is built to be customized:
+
+- create your own pool of advisors
+  - real advisors get researched by Claude
+  - fictional advisors are specified by you
+- create your own set of councils
+  - use different combinations of advisors to address different prompts
+- create your own deliberation styles
+  - instruct your advisors how to interact
+
 ## Install
 
 Council is distributed as a Claude Code plugin marketplace. To install:
 
-1. In Claude Code, run `/plugin` to open the plugin GUI.
-2. Choose **Add marketplace** and paste the repo URL: `https://github.com/dylanfetch/council` (or a local clone path during development).
+1. In the Claude Code VS Code Extension, run `/plugins` to open the plugin GUI.
+2. Choose **Add marketplace** and paste the repo URL: `https://github.com/dylanfetch/council`.
 3. From the marketplace list, select **council** and install it.
 
 Once installed, the three skills (`/create-persona`, `/create-council`, `/ask-council`) become available in any Claude Code session.
@@ -22,8 +44,10 @@ Once installed, the three skills (`/create-persona`, `/create-council`, `/ask-co
 
 ```
 /create-persona Warren Buffett
-/create-persona Charlie Munger
-/create-persona Ray Dalio
+/create-persona Tim Ferriss
+/create-persona Cal Newport
+/create-persona James Clear
+/create-persona Marcus Aurelius
 ```
 
 Each persona is a markdown file in `~/.council/personas/`. The skill researches the figure and fills out a detailed persona template covering their background, advisory style, key principles, signature phrases, and blind spots.
@@ -31,30 +55,18 @@ Each persona is a markdown file in `~/.council/personas/`. The skill researches 
 **2. Form a council:**
 
 ```
-/create-council investment-brain-trust with warren-buffett, charlie-munger, ray-dalio
+/create-council personal-advisors with warren-buffett, tim-ferriss, cal-newport, james-clear, marcus-aurelius
 ```
 
 **3. Ask a question:**
 
 ```
-/ask-council investment-brain-trust Should I allocate to bonds right now?
+/ask-council personal-advisors What should a 30-year-old optimize for now so that, at 80, they are glad they lived the way they did?
 ```
 
 Your council deliberates using the default style (roundtable). Each advisor reads their own persona file, responds in character, then reacts to the other advisors. A synthesis at the end captures agreements, disagreements, and key insights.
 
 The full deliberation is saved as markdown in `.council/history/` in your current project.
-
-## Deliberation Styles
-
-**Roundtable** (default): Everyone responds independently, then everyone reads each other's responses and revises. Two rounds. Good for getting diverse perspectives without anchoring bias.
-
-**Telephone**: Sequential refinement. Each advisor builds on the previous one's response. The chain grows as it passes through each member. Good for iteratively sharpening an idea.
-
-Override the default style:
-
-```
-/ask-council investment-brain-trust (telephone) Should I allocate to bonds right now?
-```
 
 ## Personas
 
@@ -94,24 +106,38 @@ default_style: roundtable
 
 Councils live in `~/.council/councils/`. Deliberation results live in `.council/history/` in your current project (or `~/.council/history/` when not in a project).
 
+## Deliberation Styles
+
+Two styles ship with the plugin:
+
+- **Roundtable** (default): Everyone responds independently, then everyone reads each other's responses and revises. Two rounds. Good for getting diverse perspectives without anchoring bias.
+- **Telephone**: Sequential refinement. Each advisor builds on the previous one's response. The chain grows as it passes through each member. Good for iteratively sharpening an idea.
+
+Override the default style when asking a question:
+
+```
+/ask-council personal-advisors (telephone) Choose one principle, habit, or constraint a person should adopt to build a life that is wealthy, focused, disciplined, and meaningful over the long term
+```
+
+**Create your own:** Copy an existing style from `skills/ask-council/styles/` and adapt it to your coordination pattern.
+
+A deliberation style is a markdown file with YAML frontmatter that tells the coordinator how to orchestrate subagents:
+
+```yaml
+---
+name: roundtable
+description: Parallel perspectives — everyone speaks independently, then reacts to each other
+---
+```
+
+The body describes what subagents to spawn and in what order, what each subagent reads (persona files, prior responses), what each subagent writes (step files, round files), and how to synthesize the results. No code required — just instructions an agent can follow.
+
+
 ## Viewing Results
 
 Deliberation results are markdown files. Open them in your editor.
 
 **VS Code:** Open the result file and press `Ctrl+K` then `V` to see the formatted markdown side-by-side.
-
-## Writing New Styles
-
-Deliberation styles are markdown files that tell the coordinator how to orchestrate subagents. Look at the existing styles in `skills/ask-council/styles/` for examples.
-
-A style file describes:
-1. What subagents to spawn and in what order
-2. What each subagent reads (persona files, prior responses)
-3. What each subagent writes (step files, round files)
-4. How to synthesize the results
-
-No code required. Just instructions an agent can follow.
-
 
 ## Tips
 
